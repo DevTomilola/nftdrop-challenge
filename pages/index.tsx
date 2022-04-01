@@ -1,59 +1,89 @@
-import type { NextPage } from 'next'
+import type { GetServerSideProps, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
-import Image from 'next/image'
+import Link from 'next/link'
+import { sanityClient, urlFor } from '../sanity'
+import { Collection } from '../typings'
 
-const Home: NextPage = () => {
+interface Props {
+  collections: Collection[]
+}
+
+const Home = ({ collections }: Props) => {
   const router = useRouter()
 
   return (
-    <section className="h-screen w-full">
-      <img
-        src="https://upcomingnft.net/wp-content/uploads/2022/03/cover-for-websites.jpg"
-        className="h-full w-full object-cover"
-        alt="Image alt text"
-      />
-      <div className="absolute top-0 right-0 bottom-0 left-0 bg-gray-900 opacity-75"></div>
-      <div className="absolute top-20 right-0 bottom-0 left-0">
-        <div className="lg:h-128 container mx-auto px-6 py-4 lg:flex lg:py-16">
-          <div className="flex w-full flex-col items-center lg:w-1/2 lg:flex-row">
-            <div className="max-w-lg">
-              <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                <span className="block text-white">WELCOME TO THE</span>
-                <span className="block bg-gradient-to-br from-amber-400 to-zinc-600 bg-clip-text text-transparent">
-                  KANGOO PUNCH NFT.
-                </span>
-              </h2>
-              <p className="mt-4 font-bold text-white">
-                We are cool, we are strong, we are fighters🥊. <br /> we are
-                here to DOMINATE the metaverse🌐.
-                <br />
-                <span className="block bg-gradient-to-br from-amber-400 to-zinc-600 bg-clip-text text-transparent">
-                  THIS IS KANGOO PUNCH NFT.
-                </span>
-              </p>
-              <div className="mt-6">
-                <a
-                  href="#"
-                  className="inline-block transform rounded-md bg-gradient-to-br from-amber-400 to-zinc-600 px-3 py-2 text-center font-semibold text-white transition-colors duration-200 hover:bg-blue-400"
-                  onClick={() => router.push('/nft/kangoo')}
-                >
-                  MINT NOW
-                </a>
+    <div className="mx-auto min-h-screen max-w-7xl flex-col bg-gradient-to-br from-purple-400 to-teal-600 py-20 px-10 2xl:px-0">
+      <Head>
+        <title>NFT Drop Challenge</title>
+      </Head>
+      <h1 className="mb-10 text-center text-3xl font-bold font-extralight text-white">
+        THE{' '}
+        <span className="bg-gradient-to-br from-amber-400 to-zinc-600 bg-clip-text font-extrabold font-bold text-transparent underline decoration-pink-600/50">
+          APEX
+        </span>{' '}
+        NFT Market Place
+      </h1>
+      <main className="bg-slate-100 p-10 shadow-lg shadow-indigo-500/40 ">
+        <div className="grid space-x-3 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+          {collections.map((collection) => (
+            <Link href={`/nft/${collection.slug.current}`}>
+              <div className="flex cursor-pointer flex-col items-center">
+                <img
+                  className="w-44 rounded-xl bg-gradient-to-br from-purple-400 to-teal-600 object-cover p-2 transition-all duration-200 hover:scale-105 lg:h-96 lg:w-72"
+                  src={urlFor(collection.mainImage).url()}
+                />
+                <div className="p-5">
+                  <h2 className="bg-gradient-to-br from-purple-400 to-teal-600 bg-clip-text text-center text-3xl font-bold text-transparent lg:text-3xl">
+                    {collection.title}
+                  </h2>
+                  <p className="mt-2 text-sm text-gray-400">
+                    {collection.description.substring(0, 38)}...
+                  </p>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="mt-2 flex w-full items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-zinc-600 p-2 lg:h-96 lg:w-1/2">
-            <img
-              className="w-full max-w-2xl rounded-md object-cover lg:h-full"
-              src="https://pbs.twimg.com/media/FOEfkjSXsAM7QDw.jpg"
-              alt="apple watch photo"
-            />
-          </div>
+            </Link>
+          ))}
         </div>
-      </div>
-    </section>
+      </main>
+    </div>
   )
 }
 
 export default Home
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const query = `
+      *[_type == "collection"]{
+  _id,
+  title,
+  address,
+  description,
+  nftCollectionName,
+  mainImage {
+       asset
+  },
+  previewImage {
+       asset
+  },
+  slug {
+      current
+  },
+  creator->{
+      _id,
+      name,
+      address,
+      slug {
+      current
+      },
+  }
+  }
+  `
+  const collections = await sanityClient.fetch(query)
+
+  return {
+    props: {
+      collections,
+    },
+  }
+}
