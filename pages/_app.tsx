@@ -7,7 +7,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ThirdwebProvider desiredChainId={ChainId.Rinkeby}>
       <Component
         {...pageProps}
-        className="bg-gradient-to-br from-amber-400 to-zinc-600"
       />
     </ThirdwebProvider>
   )
