@@ -15,7 +15,7 @@ const Home = ({ collections }: Props) => {
   return (
     <div className="mx-auto min-h-screen max-w-7xl flex-col py-20 px-10 2xl:px-0">
       <Head>
-        <title>NFT Drop Challenge</title>
+        <title>The APEX MarketPlace</title>
       </Head>
       <h1 className="mb-10 text-center text-3xl font-bold font-extralight text-black">
         THE{' '}

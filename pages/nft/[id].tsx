@@ -8,7 +8,6 @@ import {
 import { GetServerSideProps } from 'next'
 import { sanityClient, urlFor } from '../../sanity'
 import { Collection } from '../../typings'
-import { url } from 'inspector'
 import Link from 'next/link'
 import { BigNumber } from 'ethers'
 import toast, {Toaster} from 'react-hot-toast';
@@ -45,7 +44,7 @@ function NFTDropPage({ collection }: Props) {
 
     const fetchPrice = async() => {
       const claimConditions = await nftDrop.claimConditions.getAll();
-      setPriceInEth(claimConditions?.[0].currencyMetadata.displayValue)
+      setPriceInEth(claimConditions?.[0].currencyMetadata.displayValue);
     }
 
     fetchPrice();
@@ -85,6 +84,7 @@ function NFTDropPage({ collection }: Props) {
         const reciept = tx[0].receipt
         const claimedTokenId = tx[0].id
         const claimedNFT = await tx[0].data()
+
 
 
         console.log(reciept)
@@ -211,7 +211,7 @@ function NFTDropPage({ collection }: Props) {
           ) : !address ? (
             <>Sign in to Mint</>
           ) : (
-            <span>Mint For {priceInEth} ETH</span>
+            <span>Mint For {priceInEth} ETH each</span>
           )}
         </button>
       </div>
